@@ -27,6 +27,7 @@ const agregar = async (gasto) => {
         // Intentar leer el archivo JSON
         try {
             const stringgastos = await readFile(pathFile, 'utf8');
+
             // Si el archivo no está vacío, parsear su contenido
             if (stringgastos.trim().length > 0) {
                 gastos = JSON.parse(stringgastos);
@@ -35,7 +36,12 @@ const agregar = async (gasto) => {
             // Si ocurre un error al leer (p.ej. el archivo no existe), se inicializa como un arreglo vacío
             console.log('Error al leer el archivo JSON o archivo no existe, inicializando como un arreglo vacío');
         }
-
+        const stringroomate = await readFile(path.join(__dirname, '..', 'data', 'roommates.json'), 'utf8');
+        const roommates = JSON.parse(stringroomate);
+        const roommate = roommates.find((item) => item.nombre === gasto.roommate);
+        const resultado = parseInt(roommate.debe) + parseInt(gasto.monto)
+        roommate.debe = resultado
+        await writeFile(path.join(__dirname, '..', 'data', 'roommates.json'), JSON.stringify(roommates));
         // Agregar el nuevo gasto
         gastos.push(gasto);
 
@@ -59,8 +65,15 @@ const eliminar = async (gastoid) => {
             throw new Error('El gasto no existe');
         }
 
+        const gasto = gastos.find((item) => item.id === id);
+        const stringroomate = await readFile(path.join(__dirname, '..', 'data', 'roommates.json'), 'utf8');
+        const roommates = JSON.parse(stringroomate);
+        const roommate = roommates.find((item) => item.nombre === gasto.roommate);
+        const resultado = parseInt(roommate.debe) - parseInt(gasto.monto)
+        roommate.debe = resultado
+        await writeFile(path.join(__dirname, '..', 'data', 'roommates.json'), JSON.stringify(roommates));
+        
         gastos.splice(gastoIndex, 1);
-
         await writeFile(pathFile, JSON.stringify(gastos, null, 2));
         return { message: 'Gasto eliminado exitosamente' };
     } catch (error) {
@@ -73,7 +86,7 @@ const editar = async (gastoeditado) => {
     try {
         console.log(gastoeditado)
         const id = gastoeditado.id;
-          
+
         const stringgastos = await readFile(pathFile, 'utf8');
         const gastos = JSON.parse(stringgastos);
         const gasto = gastos.find((item) => item.id === id);
