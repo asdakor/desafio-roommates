@@ -1,0 +1,17 @@
+[
+  {
+    "nombre": "Test",
+    "debe": "1000",
+    "recibe": "5000"
+  },
+  {
+    "nombre": "Carter Jacobs",
+    "debe": "1",
+    "recibe": "2"
+  },
+  {
+    "nombre": "Hüseyin Sondermann",
+    "debe": "",
+    "recibe": ""
+  }
+]
